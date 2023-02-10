@@ -1,22 +1,38 @@
-package main.java.com.group11.servers;
+package com.group11.servers;
 
+import com.group11.computation.AsyncSearchSimulator;
+
+import java.io.IOException;
 import java.net.ServerSocket;
+import java.net.Socket;
 
-public class MultiThreadedServer implements Runnable {
+public class MultiThreadedServer implements Runnable{
 
     protected int serverPort = 8080;
     protected ServerSocket serverSocket = null;
     protected boolean isStopped = false;
+    protected Thread       runningThread= null;
 
-    public SingleThreadedServer(int port) {
+    public MultiThreadedServer(int port) {
         this.serverPort = port;
     }
 
     public void run() {
         openServerSocket();
-
         while (!isStopped()) {
-            // wait for a connection
+            synchronized(this){
+                this.runningThread = Thread.currentThread();
+            }
+            Socket clientSocket = null;
+            try {
+                clientSocket = this.serverSocket.accept();
+            } catch (IOException e) {
+                if(isStopped()) {
+                    System.out.println("Server Stopped.");
+                    return;
+                }
+                throw new RuntimeException("Error accepting client connection", e);
+            }
 
             // on receiving a request, execute the heavy computation in a new thread
             new Thread(
@@ -35,9 +51,19 @@ public class MultiThreadedServer implements Runnable {
     }
 
     public synchronized void stop() {
-        // implementation to stop the server from the main thread if needed
+        this.isStopped = true;
+        try {
+            this.serverSocket.close();
+        } catch (IOException e) {
+            throw new RuntimeException("Error closing server", e);
+        }
     }
 
     private void openServerSocket() {
-        // open server socket here
+        try {
+            this.serverSocket = new ServerSocket(this.serverPort);
+        } catch (IOException e) {
+            throw new RuntimeException("Cannot open port " + this.serverPort, e);
+        }
     }
+}

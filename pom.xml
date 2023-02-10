@@ -7,6 +7,10 @@
     <groupId>OSGroup11</groupId>
     <artifactId>OS1Assignment</artifactId>
     <version>1.0-Beta</version>
+    <properties>
+        <maven.compiler.source>19</maven.compiler.source>
+        <maven.compiler.target>19</maven.compiler.target>
+    </properties>
 
-    
+
 </project>

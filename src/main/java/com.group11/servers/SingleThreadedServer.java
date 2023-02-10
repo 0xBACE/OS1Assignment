@@ -1,6 +1,8 @@
-package main.java.com.group11.servers;
+package com.group11.servers;
 
+import java.io.IOException;
 import java.net.ServerSocket;
+import java.net.Socket;
 
 public class SingleThreadedServer implements Runnable {
 
@@ -16,7 +18,16 @@ public class SingleThreadedServer implements Runnable {
         openServerSocket();
 
         while (!isStopped()) {
-            // wait for a connection
+            Socket clientSocket = null;
+            try {
+                clientSocket = this.serverSocket.accept();
+            } catch (IOException e) {
+                if(isStopped()) {
+                    System.out.println("Server Stopped.");
+                    return;
+                }
+                throw new RuntimeException("Error accepting client connection", e);
+            }
             // on receiving a request, execute the heavy computation
         }
 
@@ -28,10 +39,19 @@ public class SingleThreadedServer implements Runnable {
     }
 
     public synchronized void stop() {
-        // implementation to stop the server from the main thread if needed
+        this.isStopped = true;
+        try {
+            this.serverSocket.close();
+        } catch (IOException e) {
+            throw new RuntimeException("Error closing server", e);
+        }
     }
 
     private void openServerSocket() {
-        // open server socket here
+        try {
+            this.serverSocket = new ServerSocket(this.serverPort);
+        } catch (IOException e) {
+            throw new RuntimeException("Cannot open port " + this.serverPort, e);
+        }
     }
 }
