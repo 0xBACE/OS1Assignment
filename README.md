@@ -1,6 +1,6 @@
 # OS1Assignment
 
-##Observations
+## Observations
 ````
 SERVER STARTED
 Request processing started at: 1676039141121
@@ -16,7 +16,7 @@ This program starts 2 threads simultaneously and runs them parallel to each othe
 
 As the program finishes the calculations the user gets a time delta back from the server in the form of HTML using the ResponseGenerator.
 
-##Operation
+## Operation
 This project uses Maven and Java 19. As such these are the prerequisite for running this software.
 
 Once the prerequisites are met the program needs to be compiled before it can be run.
